@@ -1,0 +1,2 @@
+ffmpeg==1.4
+ffmpeg_python==0.2.0
