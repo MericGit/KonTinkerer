@@ -1,0 +1,286 @@
+Utility to convert between Kontakt NCW and WAV files.
+0. Disclaimer
+1. What is this?
+2. Command line specification
+3. Issues
+4. Updates
+5. -
+
+---------------------------------------------------------
+0. Disclaimer
+ 
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESSED OR IMPLIED WARRANTIES, 
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
+ THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
+ SUCH DAMAGE.
+ 
+ 
+---------------------------------------------------------
+1. What is this?
+ This program allows to convert from WAV to NCW, or from NCW to WAV
+ files. NCW files are used in Native Instruments Kontakt software. NCW is
+ a lossless compressed format. There're different ways to convert files
+ using Kontakt (batch-resave if samples belong to some instrument, or 
+ making an instrument and then resave it etc). But if you need to convert
+ files WITHOUT Kontakt you can use this utility.
+
+--------------------------------------------------------- 
+
+2. Command line specification
+
+ Program works in 3 modes: file mode, directory mode, and list mode.
+ 
+ In short:
+   If -l flag is specified, the program works in 'list mode'
+   Otherwise (if no -l flag is specified) the program works in:
+     'file mode' - if first non-flag parameter is a file name
+     'directory mode' - if first non-flag parameter is a directory name   
+ -------------------------
+ File Mode:
+	
+  If first non-flag parameter is a WAV or NCW file then the program 
+  works in the file mode (with no -l flag is specified)
+ 
+  In file mode you can specify input file (files), or input and ouput files.
+  If output file name is not specified, program would create a file with the
+  same name but different extension.
+  If file with the same name (default or explicitely specified by user) 
+  exists already, behaviour depends on -rw flag (see below).
+ 
+  In simplest form you just type:
+     CONNCW filename.WAV
+  or
+     CONNCW filename.NCW
+
+    Сonversion direction depends on file extension. Thus in the first case 
+    NCW file would be created, in the second case - WAV file. By default 
+    the program creates file with the same name, but different extension. 
+    For example
+       CONNCW piano1.wav
+    would try to create piano1.ncw.
+ 
+ -rw flag (or -rewrite flag)
+    By default if a file with the same name as the output file exists, the 
+    program would change the output file name, adding underscore '_' and 
+    a number. i.e.
+       CONNCW violin.wav
+    would create 'violin_2.ncw' if 'violin.ncw' exists already. If 
+    -rw(-rewrite) flag is specified, then program would rewrite 
+    existing file.
+     
+  You can specify output filename explicitely:
+     CONNCW input1.wav output1.ncw
+  or
+     CONNCW input1.ncw output1.wav
+  
+  If file with the same name as output file exists already, following 
+  behaviour depends on the presence/absence of -rw flag (see above).
+    
+    
+  You can specify more than one input file in command line.
+    CONNCW file1.wav file2.wav file3.wav...
+  or
+    CONNCW file1.ncw file2.ncw file3.ncw...
+  
+  You can also specify output filenames explicitely:
+    CONNCW input1.wav output1.ncw input2.wav output2.ncw...
+  or
+    CONNCW input1.ncw output1.wav input2.ncw output2.wav...
+  If NCW file name followed by WAV file name (or WAV followed by NCW),
+  then program consider them as input filename - output filname pair.
+  If pair name is missing program doesn't consider it as an error, it
+  would create the file with different extension. Thus
+     CONNCW piano1.wav my_piano1.ncw violin1.wav snare.wav my_snare.ncw
+  is acceptable, and this line would create files
+     my_piano1.ncw, violin1.ncw, my_snare.ncw
+  but I advice against this usage to avoid possible mistakes.
+  
+ -------------------------
+ Directory Mode:
+ 
+  If first non-flag parameter is adirectory name then the program works
+  in the directory mode (with no -l flag is specified)
+  
+  In directory mode you must explicitely specify converion direction
+  using next flags:
+  
+  -w2n    - convert WAV files from source directory to NCW files
+  -n2w    - convert NCW files from source directory to WAV files
+  
+  Obviously, in directory mode you must specify source directoriy 
+  containing files to convert. i.e.
+     CONNCW -w2n WAV_SAMPLES
+     CONNCW -n2w D:\My_ncw_files
+     etc
+     
+  If no output directory is specified, program would create output files
+  in the same source directory.
+  You can specify output directory:
+     CONNCW -w2n source_dir dest_dir
+     or
+     CONNCW -n2w source_dir dest_dir
+     
+  If file with the same name as output file exists already, following 
+  behaviour depends on the presence/absence of -rw flag (see above).
+  
+  If no other flags are specified program would look for files only in 
+  source directory but not in it's subdirectories. If you need to
+  convert all files, including those in subdirectories, you must use
+  -r flag
+  
+  -r flag (or -rec flag)  - recursive search of files to convert in all
+			    subdirectories of source directory
+
+  If -r flag and output directory are specified then the output
+  directory structure would mirror the source directory structure with
+  all needed subdirectories (directories with source files)
+  
+ -------------------------
+ List Mode:
+ 
+ -l flag    - list mode
+ 
+ If -l flag is specified then the program works in list mode.
+ 
+ In list mode you must specify a name of list file.
+   CONNCW -l list_file
+   
+ List file is a text file of a particular format. First string in this
+ file must be whether   @conncwlist1   or    @conncwlist2
+ 
+ If first string is @conncwlist1 all other lines of a text file 
+ considered as names of files to convert. Conversion direction depends
+ on file extension. For example:
+	@conncwlist1
+	piano1.wav
+	piano2.wav
+	violin.ncw
+	...
+	
+ 
+ If first string is @conncwlist2 then next lines of a text file 
+ considered as alternating pairs of input-output file names. 
+ First line - input file name, second line - output file name, etc. 
+ Obviously, files must have different extensions. For example:
+8	@conncwlist2
+	piano1.wav
+	piano1.ncw
+	piano2.wav
+	piano2.ncw
+	...
+ Conversion direction depends on input file extension.
+ 
+ -------------------------
+ WAV Header Type
+ By default program creates WAV files with standard header. Some programs
+ may require extended WAV header for non-typical sample types (samplerate 
+ higher than 44100, or bits-per-sample more than 16 etc). You may override
+ standard program behaviour by using next flags:
+   -whs		- generates standard header for all files (default)
+   -whe		- generate extended header for all files
+   -wha		- auto mode. Program generates standard header for
+		typical samples, and extended for others
+                Typical samples: 8/16 bits per sample, samplerate <=44100
+ 
+ -------------------------
+ Command line parameters short:
+ 
+     CONNCW [flags] [file1|dir1|list_file] [file2|dir2] [file3] [file4] ...
+     
+     -h,-?         - shows detailed help
+     -rw,-rewrite  - rewrites already existing file
+     -r,-rec	   - searches files in all subdirectories of source
+                     directory (ignored in file mode and list mode)
+     -w2n          - conversion from WAV to NCW (ignored in file mode and list mode)
+     -n2w          - conversion from NCW to WAV (ignored in file mode and list mode)
+     -l		   - list mode
+     -whs          - generates standard header for all files (default)
+     -whe          - generate extended header for all files
+     -wha          - auto mode. Header type depends on sample type
+     
+ More specifically:
+     CONNCW                  - shows short help info
+     CONNCW -h	             - shows detailed help
+     CONNCW file             - converts file according to it's extension
+     CONNCW file1 file2...   - converts file1,file2...
+     CONNCW -w2n dir        - converts WAV files from dir
+     CONNCW -n2w dir        - converts NCW files from dir
+     CONNCW -w2n dir1 dir2  - converts WAV files from dir1 and place 
+                              results in dir2
+     CONNCW -n2w dir1 dir2  - converts NCW files from dir1 and place
+                              results in dir2
+     CONNCW -l listfile     - converts files from list file
+     etc
+	
+--------------------------------------------------------- 
+3. Issues
+
+ 1. First of all, NCW is a closed format, so the program based on assumptions
+ and tryouts. Basically, it's a beta version. I have tested it on samples 
+ I have, but it's likely that it would fail on some samples you have. In 
+ that case please contact with me and send me samples which program failed 
+ to convert.
+ 
+ 2. The program is not optimized. While from 0.3 version WAV->NCW conversion
+ works faster than that of Kontakt, NCW->WAV conversion works about 2 times
+ slower. If anyone wishes to help me with optimization - you are welcome.
+ 
+ 3. Looks like Kontakt doesn't support 8bit NCW samples, at least my
+ vesion doesn't. So I had no opportunity to check whether 8-bit files
+ conversion works properly. Chances are - it doesn't. Problem here is that
+ while 16 and 24 bit uses standard for Intel CPUs two-complementary format,
+ 8-bit WAV uses shifted value. So I don't know how Kontakt interpret this
+ samples in case of NCW conversion (if it ever does).
+ 
+ 4. The only supported WAV format is PCM. Bits per sample allowed are:
+ 8,16,24, and 32.
+
+ 5. 32-bit samples. Behaviour of different programs with WAV files may be quite 
+ ambigous. Everything outside standard 44100/16bit is a mess. For example, 
+ some programs treat 32-bit WAV files differently: as 32-bit integer, or as 
+ 32-bit float. Though there's a data like 'sampletype byte' in header, different 
+ programs treat it differently. Thus even typical values of this byte (1 or 3) 
+ may be considered as integer or float depending on software you use or even 
+ on a version of that software.
+ I tested the program on some 32-bit samples of a Kontakt instrument I 
+ had, and it seemed worked. But playing around with samples from other 
+ programs may show some unpredictable results. Keep that in mind.
+ 
+ 6. For the same reasons WAV files generated by Kontakt may differ from
+ those generated by this program. Kontakt sometimes create WAV files marked
+ as 'standard' while being non-standard. The trick is that Kontakt sometimes
+ uses 20-byte size header, while standard is 16 byte. Some programs don't
+ accept such files ('SOX' for example). My program generates files with 
+ standard header (16-byte header).
+ If you need to use such non-standard files generated by Kontakt you may use
+ my small utility 'correctWav' which converts files to standard (decreases
+ header size to standard 16 bytes).
+ 
+ 7. WAV header mess again. Some programs may require extended WAV header for
+ non-typical sample types (more than 16 bit, more than 44100 samp/sec, more
+ than 2 channels, etc).
+ For these reasons I added flags to choose WAV header type (-whs,-whe,-wha).
+ I didn't test it well with different programms, so you use it on your own risk.
+ 
+--------------------------------------------------------- 
+4. 0.2 version - changed from 'naive' version, which was just for checking
+   if this stuff would work. WAV saving speed, which was really low before,
+   increased.
+
+   0.3 version - some bitwise optimisation. Sped up.
+   
+   0.4 version - added -whs,-whe,-wha option to choose WAV header type
+ 
+--------------------------------------------------------- 
+5. -
+
+ If you are a programmer and you want to write your own converter, contact
+ me. I would share information I have.
+ 
