@@ -4,6 +4,7 @@ import subprocess
 import time
 import colorama
 import datetime
+from shutil import copyfile
 
 #Initialize Vars. Do not modify unless you are using a custom FFMPEG or xCON build
 colorama.init()
@@ -17,6 +18,7 @@ ffmpeg = os.path.dirname(os.path.realpath(__file__)) + "\Resources\\ffmpegReduce
 #Designed this way to easily accomodate direct ncx unpacking into this dir.
 rootdir = "C:\\Users\\dongd\\Downloads\\JB\\Samples"
 print("Script start: " + str(startTime))
+micDelete = ["Close","Room"]
 
 
 def scan():
@@ -32,6 +34,8 @@ def scan():
                 print("NON ncw file: " + os.path.join(subdir,file) + " found")
                 #os.remove(os.path.join(subdir,file))
     print(str(count) + " Samples found.")
+
+
 
 def shrink():
     global count
