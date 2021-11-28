@@ -72,7 +72,7 @@ def shrink(subdir,file):
 
 def micDelete(subdir, file):
     global micTarget
-    if any(mic in file for mic in micTarget):
+    if any(mic in file for mic in micTarget) and "noises" not in file:
         copyfile(os.path.dirname(os.path.realpath(__file__)) + "\Resources\micReplace.ncw", os.path.join(subdir,file))
         #print(file)
         return True
