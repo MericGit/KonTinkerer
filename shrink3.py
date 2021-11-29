@@ -15,17 +15,18 @@ xCon = os.path.dirname(os.path.realpath(__file__)) + "\Resources\conNCW04.exe"
 ffmpeg = os.path.dirname(os.path.realpath(__file__)) + "\Resources\\ffmpegReduced.exe"
 
 #Set this to the folder containing a folder that contains your samples. No ncw should be directly in this dir, only a folder containing them.
-#Designed this way to easily accomodate direct ncx unpacking into this dir.
+#Designed this way to easily accomodate direct ncx unpacking into this dir. 
 rootdir = "C:\\Users\\dongd\\Downloads\\JB\\Samples"
 print("Script start: " + str(startTime))
 micTarget = ["CLOSE","ROOM"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
+whitelist = ["noise","wind","noises"]  #Samples containing these words are ignored and not processed.
 
 
 def scan():
     global count
     count = 0
-    print("Beginning Stage A: Pre-startup")
-    print("Scanning for samples...")
+    print("Beginning Stage A: Pre-Startup")
+    print("Scanning Sor samples...")
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             if file.endswith("ncw"):
@@ -39,14 +40,17 @@ def scan():
 def osWalk():
     global count
     global current
+    print("Beginning Stage B: Mic Deletion and File Shrinking")
+    print("Targeting Samples...")
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             try:
                 if file.endswith("ncw"):
                     current += 1
                     if micDelete(subdir, file) is False:
-                        print('(' + str(current) + ' / ' + str(count) + ') ', end='')
-                        shrink(subdir,file)
+                        #print('(' + str(current) + ' / ' + str(count) + ') ', end='')
+                        print('(' + str(current) + ' / ' + str(count) + ') ')
+                        #shrink(subdir,file)
                 else:
                     print("NON ncw file located in directory - Ignoring file: " + os.path.join(subdir,file))
             except KeyboardInterrupt:
@@ -72,8 +76,9 @@ def shrink(subdir,file):
 
 def micDelete(subdir, file):
     global micTarget
-    if any(mic in file for mic in micTarget) and "noises" not in file:
-        copyfile(os.path.dirname(os.path.realpath(__file__)) + "\Resources\micReplace.ncw", os.path.join(subdir,file))
+    if not any(ignore in file for ignore in whitelist) and any(mic in file for mic in micTarget):
+    #if any(mic in file for mic in micTarget) and not any(ignore in file for ignore in whitelist):
+        copyfile(os.path.dirname(os.path.realpath(__file__)) + "\Resources\\test6.ncw", os.path.join(subdir,file))
         #print(file)
         return True
     else:
