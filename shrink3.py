@@ -86,6 +86,21 @@ def micDelete(subdir, file):
     else:
         return False
 
+def checkWhitelist(subdir, file):
+    if any(target in file for target in whitelist):
+        return True
+    else:
+        return
+        False
+
+def checkMicTarget(subdir, file):
+    if any(target in file for arget in micTarget):
+        return True
+    else:
+        return False
+        
+
+
 
 start = time.time()
 scan()
