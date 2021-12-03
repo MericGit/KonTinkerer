@@ -16,10 +16,11 @@ ffmpeg = os.path.dirname(os.path.realpath(__file__)) + "\Resources\\ffmpegReduce
 
 #Set this to the folder containing a folder that contains your samples. No ncw should be directly in this dir, only a folder containing them.
 #Designed this way to easily accomodate direct ncx unpacking into this dir. 
-rootdir = "C:\\Users\\dongd\\Downloads\\JB\\Samples"
+rootdir = "C:\\Users\\dongd\\Downloads\\JB\\Samples\\str"
 print("Script start: " + str(startTime))
-micTarget = ["CLOSE","ROOM"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
-whitelist = ["noise","wind","noises"]  #Samples containing these words are ignored and not processed.
+micTarget = ["AB","SURROUND"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
+whitelist = ["null"]  #Samples containing these words are ignored and not processed.
+doShrink = False
 
 
 def scan():
@@ -49,8 +50,9 @@ def osWalk():
                     current += 1
                     if micDelete(subdir, file) is False:
                         #print('(' + str(current) + ' / ' + str(count) + ') ', end='')
-                        print('(' + str(current) + ' / ' + str(count) + ') ')
-                        #shrink(subdir,file)
+                        print('(' + str(current) + ' / ' + str(count) + ')',end='')
+                        if doShrink is True:
+                            shrink(subdir,file)
                 else:
                     print("NON ncw file located in directory - Ignoring file: " + os.path.join(subdir,file))
             except KeyboardInterrupt:
@@ -78,7 +80,7 @@ def micDelete(subdir, file):
     global micTarget
     if not any(ignore in file for ignore in whitelist) and any(mic in file for mic in micTarget):
     #if any(mic in file for mic in micTarget) and not any(ignore in file for ignore in whitelist):
-        copyfile(os.path.dirname(os.path.realpath(__file__)) + "\Resources\\test6.ncw", os.path.join(subdir,file))
+        copyfile(os.path.dirname(os.path.realpath(__file__)) + "\Resources\\micReplace.ncw", os.path.join(subdir,file))
         #print(file)
         return True
     else:
