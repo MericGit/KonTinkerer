@@ -21,6 +21,7 @@ print("Script start: " + str(startTime))
 micTarget = ["AB","SURROUND"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
 whitelist = ["null"]  #Samples containing these words are ignored and not processed.
 doShrink = False
+pause = False
 
 
 def scan():
@@ -98,7 +99,11 @@ def checkMicTarget(subdir, file):
         return True
     else:
         return False
-        
+
+
+def micMerge(mixTargets,replaceTarget):
+    print("later")
+
 
 
 
