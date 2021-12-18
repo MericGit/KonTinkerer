@@ -18,9 +18,9 @@ ffmpeg = os.path.dirname(os.path.realpath(__file__)) + "\Resources\\ffmpegReduce
 #Designed this way to easily accomodate direct ncx unpacking into this dir. 
 rootdir = "C:\\Users\\dongd\\Downloads\\JB\\Samples"
 print("Script start: " + str(startTime))
-micTarget = ["jxlbrass","hornsa12"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
+micTarget = ["AB","SRND","SUR","SURROUND"]   #Mic positions you want to delete. Case sensitive, type exactly as is in the filename.
 whitelist = ["null"]  #Samples containing these words are ignored and not processed.
-doShrink = False
+doShrink = True
 
 
 def scan():
